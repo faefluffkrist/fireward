@@ -85,8 +85,13 @@ public final class CampfireWardClient implements ClientModInitializer {
                     BuiltInRegistries.ENTITY_TYPE.getKey(type), e);
             }
         }
-        for (var list : List.of(regularFlee, soulFlee, regularExcept, soulExcept))
+        for (var list : List.of(regularFlee, soulFlee, regularExcept, soulExcept)) {
+            // Different registered entity types can resolve to the same translated display name.
+            // The tooltip is a player-facing summary, so show each mob name only once.
+            Set<String> seen = new HashSet<>();
+            list.removeIf(name -> !seen.add(name.getString()));
             list.sort(Comparator.comparing(Component::getString));
+        }
     }
     private static String number(double value){return value==Math.rint(value)?Long.toString((long)value):Double.toString(value);}
     private static void line(List<Component> tooltip,String label,String value,ChatFormatting color){
