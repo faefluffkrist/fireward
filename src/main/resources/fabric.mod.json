@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "fireward",
+  "version": "${version}",
+  "name": "Fireward",
+  "description": "Configurable campfire protection, illager attention, and mob behavior.",
+  "authors": [
+    "faefluffkrist"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.faefluffkrist.campfireward.CampfireWard"
+    ],
+    "client": [
+      "com.faefluffkrist.campfireward.CampfireWardClient"
+    ],
+    "modmenu": [
+      "com.faefluffkrist.campfireward.configscreen.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "fireward.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  },
+  "icon": "assets/fireward/icon.png"
+}
