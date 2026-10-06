@@ -35,6 +35,17 @@ public final class WardIndex {
             && (FirewardConfig.active.includeNatural || ((WardMarker)be).ward$isPlayerPlaced());
     }
     public static List<Fire> nearby(ServerLevel level, Vec3 origin, double range, boolean litOnly) {
+        return nearby(level,origin,range,litOnly,false);
+    }
+    public static boolean verticalReach(net.minecraft.world.entity.Entity entity, Fire fire) {
+        return !FirewardConfig.active.verticalEffects || entity instanceof net.minecraft.world.entity.monster.Phantom
+            || Math.abs(entity.getY()-fire.pos().getY())<=10;
+    }
+    public static List<Fire> nearbyMob(ServerLevel level, net.minecraft.world.entity.Mob mob, double range, boolean litOnly) {
+        return nearby(level,mob.position(),range,litOnly,mob instanceof net.minecraft.world.entity.monster.Phantom);
+    }
+    private static List<Fire> nearby(ServerLevel level, Vec3 origin, double range, boolean litOnly, boolean phantom) {
+        if (FireRestrictions.endBlocked(level)) return List.of();
         var map = LEVELS.get(level);
         if (map == null) return List.of();
         List<Fire> result = new ArrayList<>();
@@ -55,7 +66,8 @@ public final class WardIndex {
                 if (!(regular || soul)) { it.remove(); continue; }
                 if (FirewardConfig.active.enabled && FirewardConfig.active.fire(soul).enabled
                     && (!litOnly || state.getValue(CampfireBlock.LIT))
-                    && origin.distanceToSqr(Vec3.atCenterOf(pos)) <= range * range)
+                    && origin.distanceToSqr(Vec3.atCenterOf(pos)) <= range * range
+                    && (!FirewardConfig.active.verticalEffects || phantom || Math.abs(origin.y-pos.getY())<=10))
                     result.add(new Fire(pos, soul));
             }
         }

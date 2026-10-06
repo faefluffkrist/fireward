@@ -30,10 +30,17 @@ public abstract class BlockItemMixin {
     @Inject(method = "placeBlock", at = @At("HEAD"), cancellable = true)
     private void ward$rejectWatchedLitPlacement(BlockPlaceContext context, BlockState state,
                                                CallbackInfoReturnable<Boolean> cir) {
-        // Inspect the actual placement state, after Unlit Campfire and other placement modifiers.
-        if (!ward$isCampfireItem() || !FirewardConfig.active.enabled || !FirewardConfig.active.blockLitPlacement
-                || !FirewardConfig.active.fire(state.is(Blocks.SOUL_CAMPFIRE)).enabled || !state.getValue(CampfireBlock.LIT)
+        if (!ward$isCampfireItem() || !FirewardConfig.active.enabled || !state.getValue(CampfireBlock.LIT)
                 || context.getPlayer() == null || !(context.getLevel() instanceof ServerLevel level)) return;
+        String reason = FireRestrictions.reason(level,context.getClickedPos());
+        if (reason != null) {
+            if (context.getPlayer() instanceof ServerPlayer player) FireRestrictions.warn(player,level,context.getClickedPos());
+            if (level.dimension().equals(net.minecraft.world.level.Level.END)) {
+                cir.setReturnValue(level.setBlock(context.getClickedPos(),state.setValue(CampfireBlock.LIT,false),11));
+            } else cir.setReturnValue(false);
+            return;
+        }
+        if (!FirewardConfig.active.blockLitPlacement || !FirewardConfig.active.fire(state.is(Blocks.SOUL_CAMPFIRE)).enabled) return;
         if (IgnitionGuard.watched(level, context.getClickedPos())) {
             if (context.getPlayer() instanceof ServerPlayer player) IgnitionGuard.warn(player);
             cir.setReturnValue(false);

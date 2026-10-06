@@ -23,7 +23,7 @@ public abstract class MobMixin {
         target = "Lnet/minecraft/world/entity/Mob;customServerAiStep(Lnet/minecraft/server/level/ServerLevel;)V"))
     private void ward$pauseBrainWhileFleeing(Mob mob, ServerLevel level) {
         boolean fear = FirewardConfig.active.enabled && (MobRules.flees(mob,false) || MobRules.flees(mob,true)) && (CampfireGoal.isFleeing(mob) ||
-            WardIndex.nearby(level,mob.position(),FirewardConfig.active.maxFearRange(),true).stream()
+            WardIndex.nearbyMob(level,mob,FirewardConfig.active.maxFearRange(),true).stream()
                 .anyMatch(f -> MobRules.flees(mob,f.soul())
                     && mob.position().distanceToSqr(f.center()) <= Math.pow(f.settings().fearRange,2)));
         if (fear) {

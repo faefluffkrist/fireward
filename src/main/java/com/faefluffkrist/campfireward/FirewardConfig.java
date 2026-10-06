@@ -20,6 +20,12 @@ public final class FirewardConfig {
     public boolean enabled = true;
     @ConfigOption(label="Include generated campfires", description="Also affect generated, command-created, and pre-existing fires. Disabled by default to protect structures.")
     public boolean includeNatural = false;
+    @ConfigOption(label="Dangerous area restrictions", description="Block lit placement and ignition near hostile structures: 30 blocks horizontally, less than 10 vertically from their bounds. Unlit placement is allowed.")
+    public boolean dangerousAreas = true;
+    @ConfigOption(label="No fires in the End", description="Extinguish placed fires and reject ignition in the End. Campfires provide no Fireward effects there. Show a brief snowflake puff and sizzle.")
+    public boolean endRestriction = true;
+    @ConfigOption(label="Limit vertical effects", description="Limit campfire effects to 10 blocks above or below the fire. Phantoms retain their normal configured range.")
+    public boolean verticalEffects = true;
     @ConfigOption(label="Friends & Foes support", description="Allow Fireward rules to affect Friends & Foes mobs.")
     public boolean friendsAndFoes = true;
     @ConfigOption(label="It Takes a Pillage support", description="Allow Fireward rules to affect It Takes a Pillage Continuation mobs.")

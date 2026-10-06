@@ -12,7 +12,8 @@
     "ShulkerInvoker",
     "PhantomAccessor",
     "CubeControlInvoker",
-    "BlockEntityIndexMixin"
+    "BlockEntityIndexMixin",
+    "CampfireIgnitionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

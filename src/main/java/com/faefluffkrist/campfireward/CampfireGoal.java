@@ -53,12 +53,12 @@ public final class CampfireGoal extends Goal {
         FirewardConfig config = FirewardConfig.active;
         if (!config.enabled || (!MobRules.flees(mob,false,config) && !MobRules.flees(mob,true,config)
                 && !MobRules.attracts(mob,false,config) && !MobRules.attracts(mob,true,config))) return false;
-        fire = WardIndex.nearby(world(),mob.position(),config.maxFearRange(),true).stream()
+        fire = WardIndex.nearbyMob(world(),mob,config.maxFearRange(),true).stream()
             .filter(f -> MobRules.flees(mob,f.soul()) && mob.position().distanceToSqr(f.center()) <= f.settings().fearRange * f.settings().fearRange)
             .min(Comparator.comparingDouble(f -> mob.position().distanceToSqr(f.center()))).orElse(null);
         fleeing = fire != null;
         if (fire == null && (MobRules.attracts(mob,false,config) || MobRules.attracts(mob,true,config))) {
-            fire = WardIndex.nearby(world(),mob.position(),config.maxAttractionRange(),false).stream()
+            fire = WardIndex.nearbyMob(world(),mob,config.maxAttractionRange(),false).stream()
                 .filter(f -> MobRules.attracts(mob,f.soul(),config)
                     && mob.position().distanceToSqr(f.center()) <= f.settings().attractionRange * f.settings().attractionRange
                     && (f.settings().destroyUnlit || world().getBlockState(f.pos()).getValue(net.minecraft.world.level.block.CampfireBlock.LIT))
@@ -69,7 +69,7 @@ public final class CampfireGoal extends Goal {
         return fire != null;
     }
     @Override public boolean canContinueToUse() {
-        if (fire == null || mob.isNoAi() || !mob.isAlive() || MobRules.raidImmune(mob)) return false;
+        if (fire == null || !WardIndex.verticalReach(mob,fire) || FireRestrictions.endBlocked(world()) || mob.isNoAi() || !mob.isAlive() || MobRules.raidImmune(mob)) return false;
         if (fleeing) {
             // Finish crossing the boundary, then let ordinary AI resume.
             return mob.position().distanceToSqr(fire.center()) < Math.pow(fire.settings().fearRange + fire.settings().escapeBuffer,2)

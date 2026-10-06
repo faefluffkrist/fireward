@@ -60,8 +60,13 @@ public final class FirewardScreen extends ScrollingConfigScreen {
         if(!line.isEmpty())result.add(line);
         return result;
     }
+    private boolean available(Row row) {
+        String name=row.field.getName();
+        return (!name.equals("friendsAndFoes") || FabricLoader.getInstance().isModLoaded("friendsandfoes"))
+            && (!name.equals("takesAPillage") || FabricLoader.getInstance().isModLoaded("takesapillage"));
+    }
     private String description(Row row) {
-        String text=row.option.description();
+        String text=row.option.description()+(available(row)?"":" Mod not installed.");
         return row.field.getType()==int.class || row.field.getType()==double.class ? text+" Range: "+row.option.min()+"–"+row.option.max()+"." : text;
     }
     private int rowHeight(Row row) {
@@ -93,9 +98,9 @@ public final class FirewardScreen extends ScrollingConfigScreen {
             if(type==boolean.class && controlVisible(by,20)) {
                 boolean on=(Boolean)row.get();
                 Button button=addRenderableWidget(Button.builder(Component.literal(on?"ON":"OFF")
-                    .withStyle(remote()?ChatFormatting.GRAY:on?ChatFormatting.GREEN:ChatFormatting.RED),b -> {
+                    .withStyle((remote() || !available(row))?ChatFormatting.GRAY:on?ChatFormatting.GREEN:ChatFormatting.RED),b -> {
                         row.set(!(Boolean)row.get());status="";rebuildWidgets();
-                    }).bounds(listX+listWidth-72,by,72,20).build());button.active=!remote();
+                    }).bounds(listX+listWidth-72,by,72,20).build());button.active=!remote() && available(row);
             } else if(type!=boolean.class) {
                 int ey=type==String.class?y+h-30:by;
                 int ex=type==String.class?listX+6:listX+listWidth-104;

@@ -23,7 +23,7 @@ public abstract class IgnitionInteractionMixin {
             InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
         if (!stack.isEmpty() && !(stack.getItem() instanceof BlockItem)
                 && world instanceof ServerLevel level && IgnitionGuard.blocked(level, hit.getBlockPos())) {
-            IgnitionGuard.warn(player);
+            com.faefluffkrist.campfireward.FireRestrictions.warn(player, level, hit.getBlockPos());
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }
@@ -33,7 +33,7 @@ public abstract class IgnitionInteractionMixin {
         if (!stack.isEmpty() && !(stack.getItem() instanceof BlockItem) && world instanceof ServerLevel level
                 && player.pick(player.blockInteractionRange(), 0, false) instanceof BlockHitResult hit
                 && IgnitionGuard.blocked(level, hit.getBlockPos())) {
-            IgnitionGuard.warn(player);
+            com.faefluffkrist.campfireward.FireRestrictions.warn(player, level, hit.getBlockPos());
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }

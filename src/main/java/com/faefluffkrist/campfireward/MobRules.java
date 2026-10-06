@@ -65,6 +65,10 @@ public final class MobRules {
         return entity instanceof Mob && (override != null ? override : defaultFear(entity,soul));
     }
     public static boolean defaultFear(Entity entity, boolean soul) {
+        String path = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath();
+        if (path.equals("sulfur_cube")) return false;
+        if (!soul && Set.of("blaze", "breeze", "camel_husk", "husk_camel", "ghast", "hoglin").contains(path)) return false;
+        if (soul && (path.equals("hoglin") || path.equals("ghast"))) return true;
         return hostile(entity) && !immune(entity) && !auraAffected(entity) && (soul || !piglin(entity));
     }
     public static boolean aura(Entity entity, boolean soul, FirewardConfig config) {

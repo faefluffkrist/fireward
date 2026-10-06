@@ -14,7 +14,7 @@ public final class AuraController {
         var config=FirewardConfig.active;
         double requestedSlowness=0;
         if(config.enabled && (MobRules.aura(mob,false,config) || MobRules.aura(mob,true,config))) {
-            for(var fire:WardIndex.nearby(level,mob.position(),config.maxAuraRange(),true)) {
+            for(var fire:WardIndex.nearbyMob(level,mob,config.maxAuraRange(),true)) {
                 if(!MobRules.aura(mob,fire.soul(),config))continue;
                 double distance=mob.position().distanceToSqr(fire.center());
                 for(var rule:fire.settings().effects()) {

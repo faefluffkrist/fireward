@@ -34,6 +34,8 @@ public final class CampfireWardClient implements ClientModInitializer {
             if(fire.fearEnabled)line(tooltip,"Wards off hostiles",number(fire.fearRange)+" blocks",ChatFormatting.GOLD);
             if(fire.attractionEnabled)line(tooltip,fire.attractionMobs.isEmpty()?"Draws illager attention":"Draws selected mobs",number(fire.attractionRange)+" blocks",ChatFormatting.RED);
             else if(soul)tooltip.add(Component.literal("Soul fire is unseen by illagers").withStyle(ChatFormatting.AQUA));
+            if(config.endRestriction)tooltip.add(Component.literal("Cannot burn or ward in the End").withStyle(ChatFormatting.AQUA));
+            if(config.dangerousAreas)tooltip.add(Component.literal("Cannot light near dangerous areas").withStyle(ChatFormatting.RED));
             boolean expanded=Minecraft.getInstance().hasShiftDown() || !config.shiftForLists;
             if(!expanded){tooltip.add(Component.literal("Hold Shift for details & mob lists").withStyle(ChatFormatting.DARK_AQUA));return;}
             tooltip.add(Component.empty());
@@ -53,6 +55,20 @@ public final class CampfireWardClient implements ClientModInitializer {
             if(config.raidImmunity)tooltip.add(Component.literal("Raid illagers ignore campfires").withStyle(ChatFormatting.GREEN));
             if(config.villagerShelter)tooltip.add(Component.literal("Shelters villagers from visible zombies").withStyle(ChatFormatting.GREEN));
             if(!config.includeNatural)tooltip.add(Component.literal("Player-placed fires only").withStyle(ChatFormatting.DARK_GRAY));
+            if(config.verticalEffects)tooltip.add(Component.literal("Vertical effects: 10 blocks • Phantoms exempt").withStyle(ChatFormatting.GRAY));
+            if(config.dangerousAreas) {
+                tooltip.add(Component.literal("Dangerous areas (30 horizontal / under 10 vertical):").withStyle(ChatFormatting.RED));
+                appendList(tooltip,"  No lit placement or ignition near:",List.of(
+                    Component.literal("Strongholds"),Component.literal("Monster rooms / spawners"),
+                    Component.literal("Nether fortresses"),Component.literal("Bastions"),
+                    Component.literal("End cities / ships"),Component.literal("Desert / jungle temples"),
+                    Component.literal("Ancient cities"),Component.literal("Woodland mansions"),
+                    Component.literal("Swamp / witch huts"),Component.literal("Pillager outposts / camps"),
+                    Component.literal("Ocean monuments / ruins"),Component.literal("Trial chambers"),
+                    Component.literal("Supported modded citadels / hostile sites"),
+                    Component.literal("Dungeon / stronghold IDs or tags")),ChatFormatting.RED);
+                tooltip.add(Component.literal("Unlit placement allowed • Villages, towns, wells, bridges excluded").withStyle(ChatFormatting.GRAY));
+            }
             if(!config.showMobLists)return;
             ClientLevel level = Minecraft.getInstance().level;
             if (level == null) {

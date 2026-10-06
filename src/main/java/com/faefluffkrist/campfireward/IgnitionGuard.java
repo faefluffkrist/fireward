@@ -20,15 +20,16 @@ public final class IgnitionGuard {
         if (!config.enabled || !config.restrictionEnabled) return false;
         Vec3 center = Vec3.atCenterOf(pos);
         return !level.getEntitiesOfClass(Mob.class, new AABB(pos).inflate(config.restrictionRange),
-            mob -> mob.isAlive() && MobRules.watches(mob,config) && mob.position().distanceToSqr(center) <= config.restrictionRange * config.restrictionRange
+            mob -> mob.isAlive() && (!config.verticalEffects || Math.abs(mob.getY()-pos.getY())<=10) && MobRules.watches(mob,config) && mob.position().distanceToSqr(center) <= config.restrictionRange * config.restrictionRange
                 && (config.restrictionThroughWalls || sees(mob,level,pos))).isEmpty();
     }
     public static boolean blocked(ServerLevel level, BlockPos pos) {
         var state = level.getBlockState(pos);
         return (state.is(Blocks.CAMPFIRE) || state.is(Blocks.SOUL_CAMPFIRE))
-            && FirewardConfig.active.fire(state.is(Blocks.SOUL_CAMPFIRE)).enabled
+            && !state.getValue(CampfireBlock.LIT)
+            && (FireRestrictions.reason(level,pos) != null || (FirewardConfig.active.fire(state.is(Blocks.SOUL_CAMPFIRE)).enabled
             && FirewardConfig.active.blockIgnition && !state.getValue(CampfireBlock.LIT)
-            && WardIndex.eligible(level, pos) && watched(level, pos);
+            && WardIndex.eligible(level, pos) && watched(level, pos)));
     }
     private static boolean sees(Mob mob, ServerLevel level, BlockPos pos) {
         var hit = level.clip(new ClipContext(mob.getEyePosition(),Vec3.atCenterOf(pos).add(0,0.3,0),
