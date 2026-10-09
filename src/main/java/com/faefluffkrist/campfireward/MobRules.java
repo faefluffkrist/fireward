@@ -20,15 +20,16 @@ public final class MobRules {
         "takesapillage:archer", "takesapillage:legioner", "takesapillage:skirmisher");
     private MobRules() {}
     public static boolean illager(Entity entity) {
-        if (entity instanceof Vex) return false;
+        if (entity instanceof Vex || peacefulTrader(entity)) return false;
         return entity instanceof AbstractIllager || (entity instanceof Raider && !(entity instanceof Witch))
             || MOD_ILLAGERS.contains(id(entity));
     }
+    public static boolean peacefulTrader(Entity entity) { return id(entity).equals("wither_spear_test:suspicious_trader"); }
     public static String id(Entity entity) {
         return BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
     }
     public static boolean hostile(Entity entity) {
-        return entity instanceof Mob && (entity instanceof Enemy
+        return !peacefulTrader(entity) && entity instanceof Mob && (entity instanceof Enemy
             || entity.getType().getCategory() == MobCategory.MONSTER || illager(entity));
     }
     public static boolean immune(Entity entity) {
@@ -60,7 +61,7 @@ public final class MobRules {
     public static boolean flees(Entity entity, boolean soul) { return flees(entity,soul,FirewardConfig.active); }
     public static boolean flees(Entity entity, boolean soul, FirewardConfig config) {
         var fire = config.fire(soul);
-        if (!config.enabled || !fire.enabled || !fire.fearEnabled || !config.supports(id(entity)) || raidImmune(entity,config)) return false;
+        if (peacefulTrader(entity) || !config.enabled || !fire.enabled || !fire.fearEnabled || !config.supports(id(entity)) || raidImmune(entity,config)) return false;
         Boolean override = fire.fearMobs.get(id(entity));
         return entity instanceof Mob && (override != null ? override : defaultFear(entity,soul));
     }
@@ -74,14 +75,14 @@ public final class MobRules {
     public static boolean aura(Entity entity, boolean soul, FirewardConfig config) {
         var fire = config.fire(soul);
         return config.enabled && fire.enabled && fire.aurasEnabled && config.supports(id(entity))
-            && !raidImmune(entity,config) && fire.auraMobs.getOrDefault(id(entity),auraAffected(entity));
+            && !peacefulTrader(entity) && !raidImmune(entity,config) && fire.auraMobs.getOrDefault(id(entity),auraAffected(entity));
     }
     public static boolean attracts(Entity entity, boolean soul, FirewardConfig config) {
         var fire = config.fire(soul);
         return config.enabled && fire.enabled && fire.attractionEnabled && config.supports(id(entity))
-            && !raidImmune(entity,config) && fire.attractionMobs.getOrDefault(id(entity),illager(entity));
+            && !peacefulTrader(entity) && !raidImmune(entity,config) && fire.attractionMobs.getOrDefault(id(entity),illager(entity));
     }
     public static boolean watches(Entity entity, FirewardConfig config) {
-        return !raidImmune(entity,config) && config.supports(id(entity)) && config.watchingMobs.getOrDefault(id(entity),illager(entity));
+        return !peacefulTrader(entity) && !raidImmune(entity,config) && config.supports(id(entity)) && config.watchingMobs.getOrDefault(id(entity),illager(entity));
     }
 }
